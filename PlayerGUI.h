@@ -23,7 +23,10 @@ private:
 
 	juce::TextButton loadButton{ "Load Files" };
 	juce::TextButton restartButton{ "Restart" };
-	juce::TextButton stopButton{ "Stop" };
+	juce::TextButton playButton{ "Play" };
+	juce::TextButton pauseButton{ "Pause" };
+	juce::TextButton goToStartButton{ "Go To Start" };
+	juce::TextButton endButton{ "End" };
 	juce::Slider volumeSlider;
 
 	std::unique_ptr<juce::FileChooser> fileChooser;
@@ -37,3 +40,4 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 
 };
+
