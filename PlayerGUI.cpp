@@ -2,7 +2,7 @@
 
 PlayerGUI::PlayerGUI()
 {
-    for (auto* btn : { &loadButton, &restartButton , &stopButton })
+    for (auto* btn : { &loadButton, &restartButton , &pauseButton , &playButton , &goToStartButton , &endButton })
     {
         btn->addListener(this);
         addAndMakeVisible(btn);
@@ -40,7 +40,10 @@ void PlayerGUI::resized()
     int y = 20;
     loadButton.setBounds(20, y, 100, 40);
     restartButton.setBounds(140, y, 80, 40);
-    stopButton.setBounds(240, y, 80, 40);
+    pauseButton.setBounds(240, y, 80, 40);
+    playButton.setBounds(340, y, 80, 40);
+    goToStartButton.setBounds(440, y, 80, 40);
+    endButton.setBounds(540, y, 80, 40);
     volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
 }
 
@@ -49,7 +52,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     if (button == &loadButton)
     {
         fileChooser = std::make_unique<juce::FileChooser>(
-            "Select an audio file...", juce::File{}, ".wav;.mp3");
+            "Select an audio file...", juce::File{}, "*.wav;*.mp3");
 
         fileChooser->launchAsync(
             juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
@@ -66,9 +69,24 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         playerAudio.restart();
     }
 
-    else if (button == &stopButton)
+    else if (button == &pauseButton)
     {
-        playerAudio.stop();
+        playerAudio.pause();
+    }
+
+    else if (button == &playButton)
+    {
+        playerAudio.play();
+    }
+
+    else if (button == &goToStartButton)
+    {
+        playerAudio.goToStart();
+    }
+
+    else if (button == &endButton)
+    {
+        playerAudio.end();
     }
 
 }
