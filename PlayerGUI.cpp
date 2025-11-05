@@ -2,7 +2,7 @@
 
 PlayerGUI::PlayerGUI()
 {
-    for (auto* btn : { &loadButton, &restartButton , &pauseButton , &playButton , &goToStartButton , &endButton })
+    for (auto* btn : { &loadButton, &restartButton , &pauseButton , &playButton , &goToStartButton , &endButton , &loopButton })
     {
         btn->addListener(this);
         addAndMakeVisible(btn);
@@ -12,6 +12,11 @@ PlayerGUI::PlayerGUI()
     volumeSlider.setValue(0.5);
     volumeSlider.addListener(this);
     addAndMakeVisible(volumeSlider);
+
+    // ------------
+    loopButton.setButtonText("Loop OFF");
+    // -----------
+
 
 
 
@@ -44,7 +49,9 @@ void PlayerGUI::resized()
     playButton.setBounds(340, y, 80, 40);
     goToStartButton.setBounds(440, y, 80, 40);
     endButton.setBounds(540, y, 80, 40);
+    loopButton.setBounds(450, getHeight() - 150, 80, 40);
     volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
+
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
@@ -87,6 +94,15 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     else if (button == &endButton)
     {
         playerAudio.end();
+    }
+        // loop button
+    else if (button == &loopButton)
+    {
+      bool newLoopState = !playerAudio.isLoopEnabled();
+      playerAudio.setLoopEnabled(newLoopState);
+      loopButton.setButtonText(newLoopState ? "Loop ON" : "Loop OFF");
+      loopButton.setColour(juce::TextButton::buttonColourId,
+          newLoopState ? juce::Colours::green : juce::Colours::lightgrey);
     }
 
 }
