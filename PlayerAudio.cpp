@@ -92,3 +92,11 @@ double PlayerAudio::getLength() const
 {
     return transportSource.getLengthInSeconds();
 }
+// loop button
+void PlayerAudio::setLoopEnabled(bool shouldLoop) noexcept
+{
+    loopEnabled = shouldLoop;
+    if (readerSource)
+        readerSource->setLooping(loopEnabled);
+}
+// -------------
