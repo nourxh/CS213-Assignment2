@@ -25,6 +25,14 @@ public:
     void tenForward();
     void tenBackward();
 
+    //speed added by so
+    void speedAudio(float speed);
+    // --------------------------
+
+    // waveform    t9   
+    juce::AudioThumbnail& getAudioThumbnail() { return audioThumbnail; }
+    //-----
+
     // loop button
     void setLoopEnabled(bool shouldLoop) noexcept;
     bool isLoopEnabled() const noexcept { return loopEnabled; }
@@ -48,6 +56,19 @@ private:
 	juce::AudioFormatManager formatManager;
 	std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
 	juce::AudioTransportSource transportSource;
+
+
+
+    // Afor waveform task 9 
+    juce::AudioThumbnailCache thumbnailCache{ 1 };
+    juce::AudioThumbnail audioThumbnail{ 512, formatManager, thumbnailCache };
+    //----------
+
+
+    //speed added by so
+    float playbackSpeed = 1.0f;
+
+    //-------------
 
     juce::AudioThumbnailCache thumbnailCache{ 1 };
     juce::AudioThumbnail audioThumbnail{ 512, formatManager, thumbnailCache };
