@@ -2,7 +2,7 @@
 
 PlayerGUI::PlayerGUI()
 {
-    for (auto* btn : { &loadButton, &restartButton , &pauseButton , &playButton , &goToStartButton , &endButton , &loopButton })
+    for (auto* btn : { &loadButton, &restartButton , &pauseButton , &playButton , &goToStartButton , &endButton , &loopButton, &muteButton })
     {
         btn->addListener(this);
         addAndMakeVisible(btn);
@@ -15,6 +15,8 @@ PlayerGUI::PlayerGUI()
 
     // ------------
     loopButton.setButtonText("Loop OFF");
+    muteButton.setButtonText("Mute OFF");
+
     // -----------
 
 
@@ -51,6 +53,7 @@ void PlayerGUI::resized()
     endButton.setBounds(540, y, 80, 40);
     loopButton.setBounds(450, getHeight() - 150, 80, 40);
     volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
+    muteButton.setBounds(640, 20, 80, 40);
 
 }
 
@@ -104,6 +107,26 @@ void PlayerGUI::buttonClicked(juce::Button* button)
       loopButton.setColour(juce::TextButton::buttonColourId,
           newLoopState ? juce::Colours::green : juce::Colours::lightgrey);
     }
+
+        
+     else if (button == &muteButton)
+     {
+        static float previousVolume = volumeSlider.getValue();
+
+        if (muteButton.getButtonText() == "Mute OFF")
+        {
+             previousVolume = volumeSlider.getValue();
+             volumeSlider.setValue(0.0);
+             muteButton.setButtonText("Mute ON");
+             muteButton.setColour(juce::TextButton::buttonColourId, juce::Colours::red);
+        }
+        else
+        {
+             volumeSlider.setValue(previousVolume);
+             muteButton.setButtonText("Mute OFF");
+             muteButton.setColour(juce::TextButton::buttonColourId, juce::Colours::lightgrey);
+        }
+     }
 
 }
 
