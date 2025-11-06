@@ -126,3 +126,13 @@ void PlayerAudio::speedAudio(float speed)
             readerSource->getAudioFormatReader()->sampleRate * playbackSpeed);
     }
 }
+// position
+void PlayerAudio::addChangeListener(juce::ChangeListener* listener)
+     {
+    changeBroadcaster.addChangeListener(listener);
+     }
+
+void PlayerAudio::removeChangeListener(juce::ChangeListener* listener)
+     {
+    changeBroadcaster.removeChangeListener(listener);
+     }
