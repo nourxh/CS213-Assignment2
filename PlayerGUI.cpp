@@ -126,29 +126,114 @@ void PlayerGUI::releaseResources()
 
 void PlayerGUI::resized()
 {
-    int y = 20;
-    loadButton.setBounds(20, y, 100, 40);
-    restartButton.setBounds(140, y, 80, 40);
-    pauseButton.setBounds(240, y, 80, 40);
-    playButton.setBounds(340, y, 80, 40);
-    goToStartButton.setBounds(440, y, 80, 40);
-    endButton.setBounds(540, y, 80, 40);
-    loopButton.setBounds(450, getHeight() - 150, 80, 40);
-    volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
-    muteButton.setBounds(640, 20, 80, 40);
-    speedSlider.setBounds(20, 150, getWidth() - 40, 30);
+    int margin = 15;
+    int buttonHeight = 35;
+    int sliderHeight = 28;
+    int labelHeight = 22;
+    int currentY = margin;
+    int buttonWidth = 80;
+    int spacing = 6;
+    int contentWidth = getWidth() - (2 * margin);
 
-    tenBackwardButton.setBounds(740, y, 80, 40);
-    tenForwardButton.setBounds(840, y, 80, 40);
+    int mixerY = currentY;
+    mixerButton.setBounds(margin, mixerY, 90, 32);
+    mixerVolumeSlider.setBounds(margin + 100, mixerY, contentWidth - 100, 28);
+    currentY += 40;
 
+    int buttonX = margin;
+    loadButton.setBounds(buttonX, currentY, 100, buttonHeight);
+    buttonX += 105;
+
+    previousButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
+    buttonX += buttonWidth + spacing;
+
+    goToStartButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
+    buttonX += buttonWidth + spacing;
+
+    tenBackwardButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
+    buttonX += buttonWidth + spacing;
+
+    restartButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
+    buttonX += buttonWidth + spacing;
+
+    pauseButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
+    buttonX += buttonWidth + spacing;
+
+    playButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
     
-    titleLabel.setBounds(20, 375, getWidth() - 40, 25);
-    authorLabel.setBounds(20, 405, getWidth() - 40, 25);
-    durationLabel.setBounds(20, 435, getWidth() - 40, 25);
-    
-    playlistBox.setBounds(20, 475 , getWidth() - 40, getHeight() - 260);
+    currentY += buttonHeight + spacing;
 
+    buttonX = margin;
+    nextButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
+    buttonX += buttonWidth + spacing;
+
+    tenForwardButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
+    buttonX += buttonWidth + spacing;
+
+    endButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
+    buttonX += buttonWidth + spacing;
+
+    loopButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
+    buttonX += buttonWidth + spacing;
+
+    muteButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
+
+    currentY += buttonHeight + 15;
+
+    volumeSlider.setBounds(margin, currentY, contentWidth, sliderHeight);
+    currentY += sliderHeight + 12;
+
+    int waveformHeight = 80;
+    currentY += waveformHeight + 8;
+
+    speedSlider.setBounds(margin + 55, currentY, contentWidth - 55, sliderHeight);
+    currentY += sliderHeight + 12;
+
+    currentTimeLabel.setBounds(margin, currentY, 60, labelHeight);
+    totalTimeLabel.setBounds(getWidth() - margin - 60, currentY, 60, labelHeight);
+    positionSlider.setBounds(margin + 65, currentY, contentWidth - 130, sliderHeight);
+    currentY += sliderHeight + 15;
+
+    // A-B Loop Controls
+    int abButtonWidth = 75;
+    int abButtonX = margin;
+
+    setAButton.setBounds(abButtonX, currentY, abButtonWidth, 32);
+    abButtonX += abButtonWidth + spacing;
+
+    setBButton.setBounds(abButtonX, currentY, abButtonWidth, 32);
+    abButtonX += abButtonWidth + spacing;
+
+    enableABLoopButton.setBounds(abButtonX, currentY, 90, 32);
+    abButtonX += 95;
+
+    clearABLoopButton.setBounds(abButtonX, currentY, abButtonWidth, 32);
+    abButtonX += abButtonWidth + 12;
+
+    pointALabel.setBounds(abButtonX, currentY, 70, 32);
+    abButtonX += 75;
+
+    pointBLabel.setBounds(abButtonX, currentY, 70, 32);
+
+    currentY += 40;
+
+    titleLabel.setBounds(margin, currentY, contentWidth, labelHeight);
+    currentY += labelHeight + 3;
+
+    authorLabel.setBounds(margin, currentY, contentWidth, labelHeight);
+    currentY += labelHeight + 3;
+
+    durationLabel.setBounds(margin, currentY, contentWidth, labelHeight);
+    currentY += labelHeight + 12;
+
+    int remainingHeight = getHeight() - currentY - margin;
+    if (remainingHeight > 60)
+    {
+        playlistBox.setBounds(margin, currentY, contentWidth, remainingHeight);
+    }
 }
+
+
 void PlayerGUI::loadTrack(int index)
 {
     if (index >= 0 && index < playlist.size())
@@ -387,56 +472,57 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
 
 void PlayerGUI::timerCallback()
 {
-    repaint();  // Trigger repaint for waveform updates
+    repaint();  
 }
-
 void PlayerGUI::paint(juce::Graphics& g)
 {
+    g.fillAll(juce::Colour(0xff353535));
+    
     if (playerAudio.getAudioThumbnail().getTotalLength() > 0.0)
     {
-        int margin = 10;
+        int margin = 15;
         int waveX = margin;
-        int waveY = 150;  // Position after Volume and Speed sliders
-        int waveWidth = getWidth() - 2 * margin;
-        int waveHeight = 75;
+        int waveY = 158;
+        int waveWidth = getWidth() - (2 * margin);
+        int waveHeight = 80;
 
-        // Background for waveform
-        g.setColour(juce::Colours::black);
-        g.fillRect(waveX, waveY, waveWidth, waveHeight);
+        g.setColour(juce::Colour(0xff1a1a1a));
+        g.fillRoundedRectangle(waveX, waveY, waveWidth, waveHeight, 4.0f);
+        
+        g.setColour(juce::Colour(0xff505050));
+        g.drawRoundedRectangle(waveX, waveY, waveWidth, waveHeight, 4.0f, 1.0f);
 
-        // Draw the Waveform
-        g.setColour(juce::Colours::cyan);
-        juce::Rectangle<int> waveArea(waveX, waveY, waveWidth, waveHeight);
+        g.setColour(juce::Colour(0xff00d4ff));
+        juce::Rectangle<int> waveArea(waveX + 2, waveY + 2, waveWidth - 4, waveHeight - 4);
         playerAudio.getAudioThumbnail().drawChannel(g, waveArea,
             0.0, playerAudio.getAudioThumbnail().getTotalLength(), 0, 1.0f);
 
-        // Progress overlay (played portion)
         double progress = playerAudio.getPosition() / playerAudio.getLength();
         if (progress > 0.0 && progress <= 1.0)
         {
-            g.setColour(juce::Colours::green.withAlpha(0.35f));
-            g.fillRect(waveX, waveY, static_cast<int>(waveWidth * progress), waveHeight);
+            g.setColour(juce::Colour(0xff00ff88).withAlpha(0.25f));
+            g.fillRoundedRectangle(waveX + 2, waveY + 2, 
+                static_cast<float>((waveWidth - 4) * progress), 
+                waveHeight - 4, 3.0f);
         }
 
-        // Current position line
-        float pointerX = static_cast<float>(waveX + (waveWidth * progress));
-        g.setColour(juce::Colours::red);
-        g.drawLine(pointerX, static_cast<float>(waveY),
-            pointerX, static_cast<float>(waveY + waveHeight), 2.5f);
+        float pointerX = static_cast<float>(waveX + 2 + ((waveWidth - 4) * progress));
+        g.setColour(juce::Colour(0xffff3366));
+        g.drawLine(pointerX, static_cast<float>(waveY + 2),
+            pointerX, static_cast<float>(waveY + waveHeight - 2), 2.5f);
 
-        // Time display on the waveform
-        g.setColour(juce::Colours::white);
         int currentSecs = static_cast<int>(playerAudio.getPosition());
         int totalSecs = static_cast<int>(playerAudio.getLength());
         juce::String timeText = juce::String::formatted("%02d:%02d / %02d:%02d",
             currentSecs / 60, currentSecs % 60, totalSecs / 60, totalSecs % 60);
 
-        // Background for text to ensure visibility
-        g.setColour(juce::Colours::black.withAlpha(0.7f));
-        g.fillRect(waveX + 5, waveY + 5, 80, 18);
+        g.setColour(juce::Colour(0xff000000).withAlpha(0.8f));
+        g.fillRoundedRectangle(waveX + 8, waveY + 8, 90, 22, 3.0f);
 
         g.setColour(juce::Colours::white);
-        g.drawText(timeText, waveX + 5, waveY + 5, 80, 18,
+        g.setFont(13.0f);
+        g.drawText(timeText, waveX + 8, waveY + 8, 90, 22,
             juce::Justification::centred);
     }
 }
+
