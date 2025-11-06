@@ -2,6 +2,8 @@
 #include <JuceHeader.h>
 #include "PlayerAudio.h"
 
+class MainComponent;
+
 class PlayerGUI : public juce::Component,
 	public juce::Button::Listener,
 	public juce::Slider::Listener,
@@ -17,6 +19,9 @@ public:
 	void prepareToPlay(int samplesPerBlockExpected, double sampleRate);
 	void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill);
 	void releaseResources();
+
+    void setParentComponent(MainComponent* parent);
+    void pausePlayback();
 
 
 private:
