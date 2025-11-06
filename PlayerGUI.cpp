@@ -33,6 +33,25 @@ PlayerGUI::PlayerGUI()
     volumeSlider.addListener(this);
     addAndMakeVisible(volumeSlider);
 
+    //mixer controls -----------------------------------------
+    
+    mixerButton.addListener(this);
+    addAndMakeVisible(mixerButton);
+
+    mixerVolumeSlider.setRange(0.0f, 1.0f, 0.01f);
+    mixerVolumeSlider.setValue(0.7f);
+    mixerVolumeSlider.addListener(this);
+    addAndMakeVisible(mixerVolumeSlider);
+
+    mixerVolumeLabel.setText("Mix Vol:", juce::dontSendNotification);
+    mixerVolumeLabel.attachToComponent(&mixerVolumeSlider, true);
+    addAndMakeVisible(mixerVolumeLabel);
+
+    // Hide mixer volume slider initially
+    mixerVolumeSlider.setVisible(false);
+    mixerVolumeLabel.setVisible(false);
+
+    //-----------------------------------------------------------------
     // ------------
     loopButton.setButtonText("Loop OFF");
     muteButton.setButtonText("Mute OFF");
@@ -316,7 +335,24 @@ void PlayerGUI::buttonClicked(juce::Button* button)
 
       playerAudio.enableABLoop(false);
   }
+//mixer
+    else if (button == &mixerButton)
+    {
+        if (parentComponent != nullptr)
+        {
+            bool newMixerState = !parentComponent->isMixerEnabled();
+            parentComponent->setMixerEnabled(newMixerState);
 
+            mixerButton.setButtonText(newMixerState ? "Mixer ON" : "Mixer OFF");
+            mixerButton.setColour(juce::TextButton::buttonColourId,
+                newMixerState ? juce::Colours::orange : juce::Colours::lightgrey);
+
+            // Show/hide mixer volume slider based on state
+            mixerVolumeSlider.setVisible(newMixerState);
+            mixerVolumeLabel.setVisible(newMixerState);
+        }
+    }
+    //------------------
 
 }
 
@@ -333,7 +369,19 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
      double newPosition = positionSlider.getValue() * playerAudio.getLength();
      playerAudio.setPosition(newPosition);
     }
-
+ //mixer
+    else if (slider == &mixerVolumeSlider)
+    {
+        if (parentComponent != nullptr)
+        {
+            // Determine which player this GUI belongs to and set appropriate volume
+            if (this == parentComponent->getPlayer1())
+                parentComponent->setPlayer1MixerVolume((float)slider->getValue());
+            else if (this == parentComponent->getPlayer2())
+                parentComponent->setPlayer2MixerVolume((float)slider->getValue());
+        }
+    }
+    //-------------------------
 }
 
 
