@@ -2,7 +2,7 @@
 
 PlayerGUI::PlayerGUI()
 {
-    for (auto* btn : { &loadButton, &restartButton , &pauseButton , &playButton , &goToStartButton , &endButton , &loopButton, &muteButton })
+    for (auto* btn : { &loadButton, &restartButton , &pauseButton , &playButton , &goToStartButton , &endButton , &loopButton, &muteButton, , &tenForwardButton, &tenBackwardButton })
     {
         btn->addListener(this);
         addAndMakeVisible(btn);
@@ -75,6 +75,9 @@ void PlayerGUI::resized()
     volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
     muteButton.setBounds(640, 20, 80, 40);
     speedSlider.setBounds(20, 150, getWidth() - 40, 30);
+
+    tenBackwardButton.setBounds(740, y, 80, 40);
+    tenForwardButton.setBounds(840, y, 80, 40);
 
     
     titleLabel.setBounds(20, 375, getWidth() - 40, 25);
@@ -184,6 +187,14 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     else if (button == &endButton)
     {
         playerAudio.end();
+    }
+    else if (button == &tenForwardButton)
+    {
+        playerAudio.tenForward();
+    }
+    else if (button == &tenBackwardButton)
+    {
+        playerAudio.tenBackward();
     }
         // loop button
     else if (button == &loopButton)
