@@ -74,6 +74,18 @@ void PlayerAudio::end()
     transportSource.setPosition(transportSource.getLengthInSeconds());
 }
 
+void PlayerAudio::tenBackward()
+{
+    double newPos = juce::jmax(0.0, transportSource.getCurrentPosition() - 10.0);
+    transportSource.setPosition(newPos);
+}
+
+void PlayerAudio::tenForward()
+{
+    double newPos = juce::jmin(getLength(), transportSource.getCurrentPosition() + 10.0);
+    transportSource.setPosition(newPos);
+}
+
 void PlayerAudio::setGain(float gain)
 {
     transportSource.setGain(gain);
