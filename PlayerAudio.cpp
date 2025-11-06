@@ -1,7 +1,9 @@
 #include "PlayerAudio.h"
 
 PlayerAudio::PlayerAudio() 
-	: audioThumbnail(512, formatManager, thumbnailCache)
+	// for waveform task 9
+    : audioThumbnail(512, formatManager, thumbnailCache)
+    //---------
 {
 	formatManager.registerBasicFormats();
 
@@ -62,6 +64,9 @@ bool PlayerAudio::loadFile(const juce::File& file)
         readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
 
 		transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate * playbackSpeed);
+		 // download wave
+		 audioThumbnail.setSource(new juce::FileInputSource(file));
+		 //-----
         transportSource.start();
 
         return true;
