@@ -32,6 +32,9 @@ private:
 
 	juce::Slider volumeSlider;
 
+	juce::Slider speedSlider;
+    juce::Label speedLabel;
+
 	std::unique_ptr<juce::FileChooser> fileChooser;
 
 	// Event handlers
