@@ -50,6 +50,11 @@ PlayerGUI::PlayerGUI()
     addAndMakeVisible(speedLabel);
     //-----------------------
 
+
+    //waveform t9 - 
+    startTimer(50);  // Update every 50ms
+
+    
     // position
     positionSlider.setRange(0.0, 1.0, 0.001);
     positionSlider.addListener(this);
@@ -329,4 +334,61 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
      playerAudio.setPosition(newPosition);
     }
 
+}
+
+
+void PlayerGUI::timerCallback()
+{
+    repaint();  // Trigger repaint for waveform updates
+}
+
+void PlayerGUI::paint(juce::Graphics& g)
+{
+    if (playerAudio.getAudioThumbnail().getTotalLength() > 0.0)
+    {
+        int margin = 10;
+        int waveX = margin;
+        int waveY = 150;  // Position after Volume and Speed sliders
+        int waveWidth = getWidth() - 2 * margin;
+        int waveHeight = 75;
+
+        // Background for waveform
+        g.setColour(juce::Colours::black);
+        g.fillRect(waveX, waveY, waveWidth, waveHeight);
+
+        // Draw the Waveform
+        g.setColour(juce::Colours::cyan);
+        juce::Rectangle<int> waveArea(waveX, waveY, waveWidth, waveHeight);
+        playerAudio.getAudioThumbnail().drawChannel(g, waveArea,
+            0.0, playerAudio.getAudioThumbnail().getTotalLength(), 0, 1.0f);
+
+        // Progress overlay (played portion)
+        double progress = playerAudio.getPosition() / playerAudio.getLength();
+        if (progress > 0.0 && progress <= 1.0)
+        {
+            g.setColour(juce::Colours::green.withAlpha(0.35f));
+            g.fillRect(waveX, waveY, static_cast<int>(waveWidth * progress), waveHeight);
+        }
+
+        // Current position line
+        float pointerX = static_cast<float>(waveX + (waveWidth * progress));
+        g.setColour(juce::Colours::red);
+        g.drawLine(pointerX, static_cast<float>(waveY),
+            pointerX, static_cast<float>(waveY + waveHeight), 2.5f);
+
+        // Time display on the waveform
+        g.setColour(juce::Colours::white);
+        int currentSecs = static_cast<int>(playerAudio.getPosition());
+        int totalSecs = static_cast<int>(playerAudio.getLength());
+        juce::String timeText = juce::String::formatted("%02d:%02d / %02d:%02d",
+            currentSecs / 60, currentSecs % 60, totalSecs / 60, totalSecs % 60);
+
+        // Background for text to ensure visibility
+        g.setColour(juce::Colours::black.withAlpha(0.7f));
+        g.fillRect(waveX + 5, waveY + 5, 80, 18);
+
+        g.setColour(juce::Colours::white);
+        g.drawText(timeText, waveX + 5, waveY + 5, 80, 18,
+            juce::Justification::centred);
+    }
 }
