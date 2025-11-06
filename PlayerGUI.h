@@ -51,7 +51,11 @@ private:
 	juce::TextButton nextButton{ "Next" };
     juce::TextButton previousButton{ "Previous" };
     juce::ListBox playlistBox;
-
+	//mixer controls
+    juce::TextButton mixerButton{ "Mixer OFF" };
+    juce::Slider mixerVolumeSlider;
+    juce::Label mixerVolumeLabel;
+    //-----
 	juce::Slider volumeSlider;
 
 	juce::Slider speedSlider;
@@ -91,6 +95,7 @@ private:
 	    PlayerGUI& plManager;
 	
 	public:
+ 
 	    PlaylistModel(PlayerGUI& plManager) : plManager(plManager) {}
 	
 	    int getNumRows() override
