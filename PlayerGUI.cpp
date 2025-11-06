@@ -2,7 +2,7 @@
 
 PlayerGUI::PlayerGUI()
 {
-    for (auto* btn : { &loadButton, &restartButton , &pauseButton , &playButton , &goToStartButton , &endButton , &loopButton, &muteButton, , &tenForwardButton, &tenBackwardButton })
+    for (auto* btn : { &loadButton, &restartButton , &pauseButton , &playButton , &goToStartButton , &endButton , &loopButton, &muteButton, , &tenForwardButton, &tenBackwardButton,  &nextButton, &previousButton })
     {
         btn->addListener(this);
         addAndMakeVisible(btn);
@@ -208,6 +208,22 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     else if (button == &tenBackwardButton)
     {
         playerAudio.tenBackward();
+    }
+    else if (button == &nextButton)
+    {
+        if (!playlist.empty())
+        {
+            int nextIndex = (currentTrackIndex + 1) % playlist.size();
+            loadTrack(nextIndex);
+        }
+    }
+    else if (button == &previousButton)
+    {
+        if (!playlist.empty())
+        {
+            int prevIndex = (currentTrackIndex - 1 + playlist.size()) % playlist.size();
+            loadTrack(prevIndex);
+        }
     }
         // loop button
     else if (button == &loopButton)
