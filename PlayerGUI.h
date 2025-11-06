@@ -47,6 +47,10 @@ private:
 	juce::Slider speedSlider;
     juce::Label speedLabel;
 
+    juce::Slider positionSlider;
+    juce::Label currentTimeLabel;
+    juce::Label totalTimeLabel;
+
 	std::unique_ptr<juce::FileChooser> fileChooser;
 
  	std::vector<PlaylistItem> playlist;
@@ -56,6 +60,8 @@ private:
 
 	void buttonClicked(juce::Button* button) override;
 	void sliderValueChanged(juce::Slider* slider) override;
+    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
+
 
     void loadTrack(int index);
     void updateTrackDisplay();
