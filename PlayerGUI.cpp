@@ -8,6 +8,15 @@ PlayerGUI::PlayerGUI()
         addAndMakeVisible(btn);
     }
 
+    addAndMakeVisible(titleLabel);
+    addAndMakeVisible(authorLabel);
+    addAndMakeVisible(durationLabel);
+    addAndMakeVisible(playlistBox);
+
+    titleLabel.setText("Title: -", juce::dontSendNotification);
+    authorLabel.setText("Author: -", juce::dontSendNotification);
+    durationLabel.setText("Duration: -", juce::dontSendNotification);
+    
     volumeSlider.setRange(0.0, 1.0, 0.01);
     volumeSlider.setValue(0.5);
     volumeSlider.addListener(this);
@@ -31,7 +40,7 @@ PlayerGUI::PlayerGUI()
     //-----------------------
 
 
-
+    playlistBox.setModel(&playlistModel);
 
 }
 
@@ -67,23 +76,88 @@ void PlayerGUI::resized()
     muteButton.setBounds(640, 20, 80, 40);
     speedSlider.setBounds(20, 150, getWidth() - 40, 30);
 
+    
+    titleLabel.setBounds(20, 375, getWidth() - 40, 25);
+    authorLabel.setBounds(20, 405, getWidth() - 40, 25);
+    durationLabel.setBounds(20, 435, getWidth() - 40, 25);
+    
+    playlistBox.setBounds(20, 475 , getWidth() - 40, getHeight() - 260);
 
 }
+void PlayerGUI::loadTrack(int index)
+{
+    if (index >= 0 && index < playlist.size())
+    {
+        currentTrackIndex = index;
+        auto& item = playlist[index];
 
+        if (playerAudio.loadFile(item.file))
+        {
+            updateTrackDisplay();
+            playlistBox.repaint();
+
+        }
+    }
+}
 void PlayerGUI::buttonClicked(juce::Button* button)
 {
     if (button == &loadButton)
     {
         fileChooser = std::make_unique<juce::FileChooser>(
-            "Select an audio file...", juce::File{}, "*.wav;*.mp3");
-
+        "Select audio files...", juce::File{}, "*.wav;*.mp3");
+    
         fileChooser->launchAsync(
-            juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
+            juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles | juce::FileBrowserComponent::canSelectMultipleItems,
             [this](const juce::FileChooser& fc)
             {
-                auto file = fc.getResult();
-                if (file.existsAsFile())
-                    playerAudio.loadFile(file);
+                auto files = fc.getResults();
+        
+                for (const auto& file : files)
+                {
+                    if (file.existsAsFile())
+                    {
+                        PlaylistItem item;
+                        item.file = file;
+                        item.title = file.getFileNameWithoutExtension();
+        
+        
+                        std::string filePath = file.getFullPathName().toStdString();
+                        TagLib::FileRef f(filePath.c_str());
+                        item.author = "Unknown";
+        
+                        if (!f.isNull() && f.tag())
+                        {
+                            auto* tag = f.tag();
+                            if (!tag->title().isEmpty()) {
+                                item.title = juce::String::fromUTF8(tag->title().toCString(true));
+                            }
+                            if (!tag->artist().isEmpty()) {
+                                item.author = juce::String::fromUTF8(tag->artist().toCString(true));
+                            }
+                        }
+        
+                        juce::AudioFormatManager audioformats;
+                        audioformats.registerBasicFormats();
+                        std::unique_ptr<juce::AudioFormatReader> reader(audioformats.createReaderFor(file));
+        
+                        if (reader != nullptr && reader->sampleRate > 0)
+                        {
+                            double durationSec = reader->lengthInSamples / reader->sampleRate;
+                            int min = (int)durationSec / 60;
+                            int sec = (int)durationSec % 60;
+                            item.duration = juce::String(min) + ":" + juce::String(sec).paddedLeft('0', 2);
+                        }
+        
+                        playlist.push_back(item);
+                    }
+                }
+        
+                playlistBox.updateContent();
+        
+                if (currentTrackIndex == -1 && !playlist.empty())
+                {
+                    loadTrack(0);
+                }
             });
     }
 
