@@ -20,6 +20,30 @@ void PlayerAudio::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 void PlayerAudio::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
 	transportSource.getNextAudioBlock(bufferToFill);
+
+	
+    double currentPos = transportSource.getCurrentPosition();
+    double totalLength = getLength();
+    if (abLoopEnabled && totalLength > 0.0)
+    {
+        if (abLoopEnabled)
+        {
+            const double eps = 1.0 / 1000.0;
+            if (loopPointB > loopPointA && (currentPos + eps) >= loopPointB)
+            {
+                transportSource.setPosition(loopPointA);
+                changeBroadcaster.sendChangeMessage();
+                return;
+            }
+        }
+    }
+
+    if (loopEnabled && transportSource.hasStreamFinished())
+    {
+        transportSource.setPosition(0.0);
+    }
+
+    changeBroadcaster.sendChangeMessage();
 }
 
 void PlayerAudio::releaseResources()
@@ -133,6 +157,58 @@ void PlayerAudio::addChangeListener(juce::ChangeListener* listener)
      }
 
 void PlayerAudio::removeChangeListener(juce::ChangeListener* listener)
-     {
+{
+    changeBroadcaster.removeChangeListener(listener);
+}
+void PlayerAudio::setLoopPointA(double timeInSeconds)
+{
+    loopPointA = juce::jmax(0.0, timeInSeconds);
+
+}
+
+void PlayerAudio::setLoopPointB(double timeInSeconds)
+{
+    double totalLength = getLength();
+    loopPointB = (totalLength > 0.0) ? juce::jmin(totalLength, timeInSeconds)
+        : juce::jmax(0.0, timeInSeconds);
+
+}
+
+void PlayerAudio::enableABLoop(bool shouldEnable)
+{
+    const double minSegment = 0.05;
+    if (shouldEnable)
+    {
+        if (loopPointB > loopPointA + minSegment)
+        {
+            abLoopEnabled = true;
+
+            if (loopEnabled)
+            {
+                loopEnabled = false;
+                if (readerSource)
+                    readerSource->setLooping(false);
+            }
+        }
+        else
+        {
+            abLoopEnabled = false;
+        }
+    }
+    else
+    {
+        abLoopEnabled = false;
+    }
+}
+
+void PlayerAudio::clearABLoop()
+{
+    abLoopEnabled = false;
+    loopPointA = 0.0;
+    loopPointB = 0.0;
+}
+
+     
+		 
     changeBroadcaster.removeChangeListener(listener);
      }
