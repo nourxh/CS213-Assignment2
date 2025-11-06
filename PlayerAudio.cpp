@@ -1,6 +1,7 @@
 #include "PlayerAudio.h"
 
 PlayerAudio::PlayerAudio() 
+	: audioThumbnail(512, formatManager, thumbnailCache)
 {
 	formatManager.registerBasicFormats();
 
@@ -36,7 +37,7 @@ bool PlayerAudio::loadFile(const juce::File& file)
 
         readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
 
-        transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate);
+		transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate * playbackSpeed);
         transportSource.start();
 
         return true;
@@ -100,3 +101,16 @@ void PlayerAudio::setLoopEnabled(bool shouldLoop) noexcept
         readerSource->setLooping(loopEnabled);
 }
 // -------------
+
+//speed
+void PlayerAudio::speedAudio(float speed)
+{
+
+    playbackSpeed = speed;
+    if (readerSource && readerSource->getAudioFormatReader())
+    {
+        // Update the source with new speed
+        transportSource.setSource(readerSource.get(), 0, nullptr,
+            readerSource->getAudioFormatReader()->sampleRate * playbackSpeed);
+    }
+}
