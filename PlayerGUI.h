@@ -40,6 +40,8 @@ private:
     juce::TextButton tenBackwardButton{ "-10s" };
     juce::TextButton loopButton{ "Loop" };
     juce::TextButton muteButton{ "Mute" };
+	juce::TextButton nextButton{ "Next" };
+    juce::TextButton previousButton{ "Previous" };
     juce::ListBox playlistBox;
 
 	juce::Slider volumeSlider;
