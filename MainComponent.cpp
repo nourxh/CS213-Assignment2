@@ -22,12 +22,94 @@ void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate
     player1.prepareToPlay(samplesPerBlockExpected, sampleRate);
     player2.prepareToPlay(samplesPerBlockExpected, sampleRate);
 }
-
+//mixer
 void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
     bufferToFill.clearActiveBufferRegion();
-    player1.getNextAudioBlock(bufferToFill);
+
+    //========== MIXER ADDITIONS START ==========
+    // Mixer mode - play both tracks simultaneously
+    if (mixerEnabled)
+    {
+        // Create temporary buffers for each player
+        juce::AudioBuffer<float> tempBuffer1(bufferToFill.buffer->getNumChannels(), bufferToFill.buffer->getNumSamples());
+        juce::AudioBuffer<float> tempBuffer2(bufferToFill.buffer->getNumChannels(), bufferToFill.buffer->getNumSamples());
+
+        juce::AudioSourceChannelInfo info1(&tempBuffer1, 0, bufferToFill.numSamples);
+        juce::AudioSourceChannelInfo info2(&tempBuffer2, 0, bufferToFill.numSamples);
+
+        // Get audio from both players
+        player1.getNextAudioBlock(info1);
+        player2.getNextAudioBlock(info2);
+
+        // Mix both buffers with individual volume control
+        for (int channel = 0; channel < bufferToFill.buffer->getNumChannels(); ++channel)
+        {
+            auto* output = bufferToFill.buffer->getWritePointer(channel, bufferToFill.startSample);
+            auto* input1 = tempBuffer1.getReadPointer(channel);
+            auto* input2 = tempBuffer2.getReadPointer(channel);
+
+            for (int sample = 0; sample < bufferToFill.numSamples; ++sample)
+            {
+                // Mix with volume control and prevent clipping
+                float mixedSample = (input1[sample] * player1MixerVolume) +
+                    (input2[sample] * player2MixerVolume);
+
+                // Simple limiter to prevent clipping
+                output[sample] = juce::jlimit(-1.0f, 1.0f, mixedSample);
+            }
+        }
+    }
+    else
+    {
+        // Original single-player mode
+        if (activePlayer == &player1)
+            player1.getNextAudioBlock(bufferToFill);
+        else if (activePlayer == &player2)
+            player2.getNextAudioBlock(bufferToFill);
+    }
+    //========== MIXER ADDITIONS END ==========
 }
+
+// Mixer implementation
+void MainComponent::setMixerEnabled(bool shouldEnable)
+{
+    mixerEnabled = shouldEnable;
+}
+
+void MainComponent::setPlayer1MixerVolume(float volume)
+{
+    player1MixerVolume = juce::jlimit(0.0f, 1.0f, volume);
+}
+
+void MainComponent::setPlayer2MixerVolume(float volume)
+{
+    player2MixerVolume = juce::jlimit(0.0f, 1.0f, volume);
+}
+
+void MainComponent::switchToPlayer(PlayerGUI* player)
+{
+    setActivePlayer(player);
+    if (!mixerEnabled && activePlayer != nullptr)
+    {
+        if (player == &player1)
+            player2.pausePlayback();
+        else if (player == &player2)
+            player1.pausePlayback();
+    }
+}
+
+void MainComponent::setActivePlayer(PlayerGUI* player)
+{
+    if (activePlayer != nullptr && activePlayer != player)
+    {
+        activePlayer->pausePlayback();
+    }
+
+    activePlayer = player;
+}
+
+//-----------------
 
 void MainComponent::releaseResources()
 {
