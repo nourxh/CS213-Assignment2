@@ -19,6 +19,17 @@ PlayerGUI::PlayerGUI()
 
     // -----------
 
+    //speed
+    speedSlider.setRange(0.25f, 4.0f, 0.05f);
+    speedSlider.setValue(1.0f);
+    speedSlider.addListener(this);
+    addAndMakeVisible(speedSlider);
+    
+    speedLabel.setText("Speed:", juce::dontSendNotification);
+    speedLabel.attachToComponent(&speedSlider, true);
+    addAndMakeVisible(speedLabel);
+    //-----------------------
+
 
 
 
@@ -54,6 +65,8 @@ void PlayerGUI::resized()
     loopButton.setBounds(450, getHeight() - 150, 80, 40);
     volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
     muteButton.setBounds(640, 20, 80, 40);
+    speedSlider.setBounds(20, 150, getWidth() - 40, 30);
+
 
 }
 
@@ -134,4 +147,8 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
 {
     if (slider == &volumeSlider)
         playerAudio.setGain((float)slider->getValue());
+    // sppeedd 
+    else if (slider == &speedSlider)
+        playerAudio.speedAudio((float)slider->getValue());
+
 }
