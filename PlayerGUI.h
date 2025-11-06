@@ -83,9 +83,8 @@ private:
 	void buttonClicked(juce::Button* button) override;
 	void sliderValueChanged(juce::Slider* slider) override;
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
+    juce::String formatTime(double seconds);
     void paint(juce::Graphics& g) override;  // For drawing waveform
-
-
     void loadTrack(int index);
     void updateTrackDisplay();
 
