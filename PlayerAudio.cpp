@@ -1,29 +1,27 @@
 #include "PlayerAudio.h"
 
-PlayerAudio::PlayerAudio() 
-	// for waveform task 9
+PlayerAudio::PlayerAudio()
+
     : audioThumbnail(512, formatManager, thumbnailCache)
-    //---------
+
 {
-	formatManager.registerBasicFormats();
-
+    formatManager.registerBasicFormats();
 }
-
 
 PlayerAudio::~PlayerAudio()
 {
-	transportSource.setSource(nullptr);
+    transportSource.setSource(nullptr);
 }
 
 void PlayerAudio::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
-	transportSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
+    transportSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
 }
+
 void PlayerAudio::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
-	transportSource.getNextAudioBlock(bufferToFill);
+    transportSource.getNextAudioBlock(bufferToFill);
 
-	
     double currentPos = transportSource.getCurrentPosition();
     double totalLength = getLength();
     if (abLoopEnabled && totalLength > 0.0)
@@ -50,7 +48,7 @@ void PlayerAudio::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferTo
 
 void PlayerAudio::releaseResources()
 {
-	transportSource.releaseResources();
+    transportSource.releaseResources();
 }
 
 bool PlayerAudio::loadFile(const juce::File& file)
@@ -62,12 +60,13 @@ bool PlayerAudio::loadFile(const juce::File& file)
         readerSource.reset();
 
         readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
+        readerSource->setLooping(loopEnabled);
 
-		transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate * playbackSpeed);
-		 // download wave
-		 audioThumbnail.setSource(new juce::FileInputSource(file));
-		 //-----
+        transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate * playbackSpeed);
+        audioThumbnail.setSource(new juce::FileInputSource(file));
+
         transportSource.start();
+
 
         return true;
     }
@@ -85,7 +84,6 @@ void PlayerAudio::play()
     transportSource.start();
 }
 
-
 void PlayerAudio::pause()
 {
     transportSource.stop();
@@ -95,12 +93,6 @@ void PlayerAudio::goToStart()
 {
     transportSource.stop();
     transportSource.setPosition(0.0);
-
-}
-
-void PlayerAudio::end()
-{
-    transportSource.setPosition(transportSource.getLengthInSeconds());
 }
 
 void PlayerAudio::tenBackward()
@@ -113,6 +105,10 @@ void PlayerAudio::tenForward()
 {
     double newPos = juce::jmin(getLength(), transportSource.getCurrentPosition() + 10.0);
     transportSource.setPosition(newPos);
+}
+void PlayerAudio::end()
+{
+    transportSource.setPosition(transportSource.getLengthInSeconds());
 }
 
 void PlayerAudio::setGain(float gain)
@@ -134,37 +130,35 @@ double PlayerAudio::getLength() const
 {
     return transportSource.getLengthInSeconds();
 }
-// loop button
+
 void PlayerAudio::setLoopEnabled(bool shouldLoop) noexcept
 {
     loopEnabled = shouldLoop;
     if (readerSource)
         readerSource->setLooping(loopEnabled);
 }
-// -------------
 
-//speed
 void PlayerAudio::speedAudio(float speed)
 {
 
     playbackSpeed = speed;
     if (readerSource && readerSource->getAudioFormatReader())
     {
-        // Update the source with new speed
         transportSource.setSource(readerSource.get(), 0, nullptr,
             readerSource->getAudioFormatReader()->sampleRate * playbackSpeed);
     }
 }
-// position
+
 void PlayerAudio::addChangeListener(juce::ChangeListener* listener)
-     {
+{
     changeBroadcaster.addChangeListener(listener);
-     }
+}
 
 void PlayerAudio::removeChangeListener(juce::ChangeListener* listener)
 {
     changeBroadcaster.removeChangeListener(listener);
 }
+
 void PlayerAudio::setLoopPointA(double timeInSeconds)
 {
     loopPointA = juce::jmax(0.0, timeInSeconds);
@@ -213,7 +207,3 @@ void PlayerAudio::clearABLoop()
     loopPointB = 0.0;
 }
 
-     
-		 
-    changeBroadcaster.removeChangeListener(listener);
-     }
