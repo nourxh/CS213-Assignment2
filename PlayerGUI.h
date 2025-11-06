@@ -36,6 +36,8 @@ private:
 	juce::TextButton pauseButton{ "Pause" };
 	juce::TextButton goToStartButton{ "Go To Start" };
 	juce::TextButton endButton{ "End" };
+    juce::TextButton tenForwardButton{ "+10s" };
+    juce::TextButton tenBackwardButton{ "-10s" };
     juce::TextButton loopButton{ "Loop" };
     juce::TextButton muteButton{ "Mute" };
     juce::ListBox playlistBox;
