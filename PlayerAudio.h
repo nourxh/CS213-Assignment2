@@ -29,6 +29,21 @@ public:
     void setLoopEnabled(bool shouldLoop) noexcept;
     bool isLoopEnabled() const noexcept { return loopEnabled; }
     // --------------
+
+    // t 10
+    void addChangeListener(juce::ChangeListener* listener);
+    void removeChangeListener(juce::ChangeListener* listener);
+
+    void setLoopPointA(double timeInSeconds);
+    void setLoopPointB(double timeInSeconds);
+    void enableABLoop(bool shouldEnable);
+    void clearABLoop();
+
+    double getLoopPointA() const { return loopPointA; }
+    double getLoopPointB() const { return loopPointB; }
+    bool isABLoopEnabled() const { return abLoopEnabled; }
+
+
 private:
 	juce::AudioFormatManager formatManager;
 	std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
@@ -38,6 +53,11 @@ private:
 
 
     bool loopEnabled = false;
+
+     double loopPointA = 0.0;
+     double loopPointB = 0.0;
+     bool abLoopEnabled = false;
+
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerAudio)
 
