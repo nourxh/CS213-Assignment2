@@ -39,6 +39,19 @@ PlayerGUI::PlayerGUI()
     addAndMakeVisible(speedLabel);
     //-----------------------
 
+    // position
+    positionSlider.setRange(0.0, 1.0, 0.001);
+    positionSlider.addListener(this);
+    positionSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    addAndMakeVisible(positionSlider);
+
+    currentTimeLabel.setText("00:00", juce::dontSendNotification);
+    totalTimeLabel.setText("00:00", juce::dontSendNotification);
+    addAndMakeVisible(currentTimeLabel);
+    addAndMakeVisible(totalTimeLabel);
+
+    playerAudio.addChangeListener(this);
+
 
     playlistBox.setModel(&playlistModel);
 
@@ -235,5 +248,11 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
     // sppeedd 
     else if (slider == &speedSlider)
         playerAudio.speedAudio((float)slider->getValue());
+    // position
+     else if (slider == &positionSlider)
+    {
+     double newPosition = positionSlider.getValue() * playerAudio.getLength();
+     playerAudio.setPosition(newPosition);
+    }
 
 }
