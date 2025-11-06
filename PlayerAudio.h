@@ -22,6 +22,9 @@ public:
 	double getPosition() const;
 	double getLength() const;
 
+    void tenForward();
+    void tenBackward();
+
     // loop button
     void setLoopEnabled(bool shouldLoop) noexcept;
     bool isLoopEnabled() const noexcept { return loopEnabled; }
