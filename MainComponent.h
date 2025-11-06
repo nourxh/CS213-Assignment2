@@ -9,14 +9,22 @@ public:
     ~MainComponent() override;
 
     void resized() override;
-
+    void paint(juce::Graphics& g) override;
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
     void releaseResources() override;
 
+    void setActivePlayer(PlayerGUI* player);
+
+
 private:
     PlayerGUI player1;
+    PlayerGUI player2;
+
+    PlayerGUI* activePlayer = nullptr;
+
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
 
