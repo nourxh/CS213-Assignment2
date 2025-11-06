@@ -1,4 +1,15 @@
 #include "PlayerGUI.h"
+#include "MainComponent.h" 
+
+void PlayerGUI::setParentComponent(MainComponent* parent)
+{
+    parentComponent = parent;
+}
+
+void PlayerGUI::pausePlayback()
+{
+    playerAudio.pause();
+}
 
 PlayerGUI::PlayerGUI()
 {
@@ -200,11 +211,16 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     {
         playerAudio.pause();
     }
-
     else if (button == &playButton)
-    {
-        playerAudio.play();
-    }
+     {
+     if (parentComponent != nullptr)
+     {
+         parentComponent->setActivePlayer(this);
+     }
+     playerAudio.play();
+     }   
+
+  
 
     else if (button == &goToStartButton)
     {
