@@ -49,6 +49,9 @@ private:
 	std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
 	juce::AudioTransportSource transportSource;
 
+    juce::AudioThumbnailCache thumbnailCache{ 1 };
+    juce::AudioThumbnail audioThumbnail{ 512, formatManager, thumbnailCache };
+
     juce::ChangeBroadcaster changeBroadcaster;
 
 
