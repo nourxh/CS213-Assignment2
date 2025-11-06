@@ -4,7 +4,9 @@
 
 class PlayerGUI : public juce::Component,
 	public juce::Button::Listener,
-	public juce::Slider::Listener
+	public juce::Slider::Listener,
+    public juce::Timer,
+    public juce::ChangeListener
 {
 public:
 	PlayerGUI();
@@ -53,8 +55,16 @@ private:
     juce::Label currentTimeLabel;
     juce::Label totalTimeLabel;
 
-	std::unique_ptr<juce::FileChooser> fileChooser;
+    juce::TextButton setAButton{ "Set A" };
+    juce::TextButton setBButton{ "Set B" };
+    juce::TextButton enableABLoopButton{ "A-B Loop" };
+    juce::TextButton clearABLoopButton{ "Clear" };
 
+    juce::Label pointALabel;
+    juce::Label pointBLabel;
+
+
+	std::unique_ptr<juce::FileChooser> fileChooser;
  	std::vector<PlaylistItem> playlist;
  	int currentTrackIndex = -1;
 
