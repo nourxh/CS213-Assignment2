@@ -52,7 +52,21 @@ PlayerGUI::PlayerGUI()
 
     playerAudio.addChangeListener(this);
 
+    setAButton.addListener(this);
+    setBButton.addListener(this);
+    enableABLoopButton.addListener(this);
+    clearABLoopButton.addListener(this);
 
+    addAndMakeVisible(setAButton);
+    addAndMakeVisible(setBButton);
+    addAndMakeVisible(enableABLoopButton);
+    addAndMakeVisible(clearABLoopButton);
+
+    pointALabel.setText("A: --:--", juce::dontSendNotification);
+    pointBLabel.setText("B: --:--", juce::dontSendNotification);
+    addAndMakeVisible(pointALabel);
+    addAndMakeVisible(pointBLabel);
+    
     playlistBox.setModel(&playlistModel);
 
 }
@@ -254,6 +268,34 @@ void PlayerGUI::buttonClicked(juce::Button* button)
              muteButton.setColour(juce::TextButton::buttonColourId, juce::Colours::lightgrey);
         }
      }
+      else if (button == &setAButton)
+  {
+      double currentTime = playerAudio.getPosition();
+      playerAudio.setLoopPointA(currentTime);
+      pointALabel.setText("A: " + formatTime(currentTime), juce::dontSendNotification);
+  }
+  else if (button == &setBButton)
+  {
+      double currentTime = playerAudio.getPosition();
+      playerAudio.setLoopPointB(currentTime);
+      pointBLabel.setText("B: " + formatTime(currentTime), juce::dontSendNotification);
+  }
+  else if (button == &enableABLoopButton)
+  {
+      playerAudio.enableABLoop(true);
+      enableABLoopButton.setColour(juce::TextButton::buttonColourId, juce::Colours::green);
+  }
+
+  else if (button == &clearABLoopButton)
+  {
+      playerAudio.clearABLoop();
+      pointALabel.setText("A: --:--", juce::dontSendNotification);
+      pointBLabel.setText("B: --:--", juce::dontSendNotification);
+      enableABLoopButton.setColour(juce::TextButton::buttonColourId, juce::Colours::lightgrey);
+
+      playerAudio.enableABLoop(false);
+  }
+
 
 }
 
