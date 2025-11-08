@@ -21,18 +21,21 @@ public:
     void end();
     void tenForward();
     void tenBackward();
-
     void setGain(float gain);
 
+    //task 7
     void setPosition(double pos);
     double getPosition() const;
     double getLength() const;
 
     bool isPlaying() const { return transportSource.isPlaying(); }
     double getCurrentPosition() const { return transportSource.getCurrentPosition(); }
+    //-------
 
+    //task 10
     void setLoopEnabled(bool shouldLoop) noexcept;
     bool isLoopEnabled() const noexcept { return loopEnabled; }
+    //-----------
 
     void speedAudio(float speed);
 
@@ -42,6 +45,7 @@ public:
     void addChangeListener(juce::ChangeListener* listener);
     void removeChangeListener(juce::ChangeListener* listener);
 
+    //task 10
     void setLoopPointA(double timeInSeconds);
     void setLoopPointB(double timeInSeconds);
     void enableABLoop(bool shouldEnable);
@@ -65,6 +69,7 @@ private:
 
     juce::ChangeBroadcaster changeBroadcaster;
 
+    //task 10
     double loopPointA = 0.0;
     double loopPointB = 0.0;
     bool abLoopEnabled = false;
