@@ -28,6 +28,7 @@ public:
     PlayerGUI* getActivePlayer() const { return activePlayer; }
     void switchToPlayer(PlayerGUI* player);
 
+    //multiple
     void setActivePlayer(PlayerGUI* player);
 
 private:
