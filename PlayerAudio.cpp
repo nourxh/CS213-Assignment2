@@ -131,12 +131,14 @@ double PlayerAudio::getLength() const
     return transportSource.getLengthInSeconds();
 }
 
+//task 4
 void PlayerAudio::setLoopEnabled(bool shouldLoop) noexcept
 {
     loopEnabled = shouldLoop;
     if (readerSource)
         readerSource->setLooping(loopEnabled);
 }
+//----------
 
 void PlayerAudio::speedAudio(float speed)
 {
@@ -159,6 +161,7 @@ void PlayerAudio::removeChangeListener(juce::ChangeListener* listener)
     changeBroadcaster.removeChangeListener(listener);
 }
 
+//task 10
 void PlayerAudio::setLoopPointA(double timeInSeconds)
 {
     loopPointA = juce::jmax(0.0, timeInSeconds);
@@ -206,4 +209,5 @@ void PlayerAudio::clearABLoop()
     loopPointA = 0.0;
     loopPointB = 0.0;
 }
+//---------------
 
