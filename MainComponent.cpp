@@ -83,17 +83,24 @@ void MainComponent::resized()
 
 void MainComponent::paint(juce::Graphics& g)
 {
-    g.fillAll(juce::Colour(0xff2a2a2a));
+
+    juce::ColourGradient mainGradient(
+        juce::Colour(0xff1a0f2e), 0, 0,                          
+        juce::Colour(0xff3d2463), getWidth(), getHeight(), false 
+    );
+    g.setGradientFill(mainGradient);
+    g.fillAll();
 
     int spacing = 20;
     int separatorWidth = 2;
     int halfWidth = (getWidth() - (2 * spacing) - separatorWidth) / 2;
     int separatorX = halfWidth + spacing;
 
-    g.setColour(juce::Colour(0xff505050));
+    g.setColour(juce::Colour(0xff8b5cf6).withAlpha(0.5f));
     g.fillRect(separatorX, spacing, separatorWidth, getHeight() - (2 * spacing));
 }
 
+//multiple
 void MainComponent::setActivePlayer(PlayerGUI* player)
 {
     if (activePlayer != nullptr && activePlayer != player)
@@ -103,6 +110,7 @@ void MainComponent::setActivePlayer(PlayerGUI* player)
 
     activePlayer = player;
 }
+//------------------
 
 
 void MainComponent::setMixerEnabled(bool shouldEnable)
