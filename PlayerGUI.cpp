@@ -14,8 +14,8 @@ void PlayerGUI::pausePlayback()
 }
 PlayerGUI::PlayerGUI()
 {
-    for (auto* btn : { &loadButton, &restartButton, &pauseButton, &playButton,
-                      &goToStartButton, &endButton, &loopButton, &muteButton, &tenForwardButton, &tenBackwardButton,&nextButton,&previousButton })
+    for (auto* btn : { &loadButton, &restartButton, &pauseButton, &playButton, &enableABLoopButton, &goToStartButton, &endButton, &loopButton, &muteButton, &tenForwardButton,
+                       &tenBackwardButton,&nextButton,&previousButton,& setAButton,& setBButton,& clearABLoopButton,& mixerButton })
     {
         btn->addListener(this);
         addAndMakeVisible(btn);
@@ -64,6 +64,7 @@ PlayerGUI::PlayerGUI()
     speedLabel.attachToComponent(&speedSlider, true);
     addAndMakeVisible(speedLabel);
 
+    //task 4
     positionSlider.setRange(0.0, 1.0, 0.001);
     positionSlider.addListener(this);
     positionSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
@@ -73,11 +74,13 @@ PlayerGUI::PlayerGUI()
     totalTimeLabel.setText("00:00", juce::dontSendNotification);
     addAndMakeVisible(currentTimeLabel);
     addAndMakeVisible(totalTimeLabel);
+    //------------
 
     playerAudio.addChangeListener(this);
 
     startTimer(50);  
     
+    //task 10
     setAButton.addListener(this);
     setBButton.addListener(this);
     enableABLoopButton.addListener(this);
@@ -92,9 +95,33 @@ PlayerGUI::PlayerGUI()
     pointBLabel.setText("B: --:--", juce::dontSendNotification);
     addAndMakeVisible(pointALabel);
     addAndMakeVisible(pointBLabel);
+    //-----------
 
 
     playlistBox.setModel(&playlistModel);
+
+        //buttons and playlist design
+        auto glassPink = juce::Colour::fromFloatRGBA(1.0f, 0.8f, 0.9f, 0.25f); 
+        auto glassBorder = juce::Colour::fromFloatRGBA(1.0f, 0.7f, 0.85f, 0.4f);
+
+
+        for (auto* button : { &loadButton, &restartButton, &pauseButton, &playButton,&enableABLoopButton,&goToStartButton, &endButton, &loopButton, &muteButton, &tenForwardButton,
+                           &tenBackwardButton,&nextButton,&previousButton,&setAButton,&setBButton,&clearABLoopButton,&mixerButton })
+        {
+            button->setColour(juce::TextButton::buttonColourId, glassPink);
+            button->setColour(juce::TextButton::buttonOnColourId, glassBorder);
+            button->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+            button->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+            button->setAlpha(0.9f);
+        }
+
+        playlistBox.setColour(juce::ListBox::backgroundColourId,
+            juce::Colour::fromFloatRGBA(0.18f, 0.12f, 0.28f, 0.6f)); 
+        playlistBox.setColour(juce::ListBox::outlineColourId,
+            juce::Colour::fromFloatRGBA(0.5f, 0.4f, 0.7f, 0.4f)); 
+        playlistBox.setColour(juce::ListBox::textColourId,
+            juce::Colours::white.withAlpha(0.95f)); 
+
 }
 
 PlayerGUI::~PlayerGUI() {}
@@ -122,7 +149,7 @@ void PlayerGUI::resized()
     int labelHeight = 22;
     int currentY = margin;
     int buttonWidth = 80;
-    int spacing = 6;
+    int spacing = 12; 
     int contentWidth = getWidth() - (2 * margin);
 
     int mixerY = currentY;
@@ -130,52 +157,60 @@ void PlayerGUI::resized()
     mixerVolumeSlider.setBounds(margin + 150, mixerY, contentWidth - 180, 28);
     currentY += 40;
 
-    int buttonX = margin;
-    loadButton.setBounds(buttonX, currentY, 100, buttonHeight);
-    buttonX += 105;
+    {
+        const int firstRowCount = 6;
+        int firstRowButtonWidth = (contentWidth - (spacing * (firstRowCount - 1))) / firstRowCount;
+        int buttonX = margin;
 
-    previousButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
-    buttonX += buttonWidth + spacing;
+        loadButton.setBounds(buttonX, currentY, firstRowButtonWidth, buttonHeight);
+        buttonX += firstRowButtonWidth + spacing;
 
-    goToStartButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
-    buttonX += buttonWidth + spacing;
+        playButton.setBounds(buttonX, currentY, firstRowButtonWidth, buttonHeight);
+        buttonX += firstRowButtonWidth + spacing;
 
-    tenBackwardButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
-    buttonX += buttonWidth + spacing;
+        pauseButton.setBounds(buttonX, currentY, firstRowButtonWidth, buttonHeight);
+        buttonX += firstRowButtonWidth + spacing;
 
-    restartButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
-    buttonX += buttonWidth + spacing;
+        goToStartButton.setBounds(buttonX, currentY, firstRowButtonWidth, buttonHeight);
+        buttonX += firstRowButtonWidth + spacing;
 
-    pauseButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
-    buttonX += buttonWidth + spacing;
+        restartButton.setBounds(buttonX, currentY, firstRowButtonWidth, buttonHeight);
+        buttonX += firstRowButtonWidth + spacing;
+
+        endButton.setBounds(buttonX, currentY, firstRowButtonWidth, buttonHeight);
+    }
 
     currentY += buttonHeight + spacing;
 
-    buttonX = margin;
+    {
+        const int secondRowCount = 6;
+        int secondRowButtonWidth = (contentWidth - (spacing * (secondRowCount - 1))) / secondRowCount;
+        int buttonX = margin;
 
-    playButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
-    buttonX += buttonWidth + spacing;
+        nextButton.setBounds(buttonX, currentY, secondRowButtonWidth, buttonHeight);
+        buttonX += secondRowButtonWidth + spacing;
 
-    nextButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
-    buttonX += buttonWidth + spacing;
+        previousButton.setBounds(buttonX, currentY, secondRowButtonWidth, buttonHeight);
+        buttonX += secondRowButtonWidth + spacing;
 
-    tenForwardButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
-    buttonX += buttonWidth + spacing;
+        tenForwardButton.setBounds(buttonX, currentY, secondRowButtonWidth, buttonHeight); 
+        buttonX += secondRowButtonWidth + spacing;
 
-    endButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
-    buttonX += buttonWidth + spacing;
+        tenBackwardButton.setBounds(buttonX, currentY, secondRowButtonWidth, buttonHeight); 
+        buttonX += secondRowButtonWidth + spacing;
 
-    loopButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
-    buttonX += buttonWidth + spacing;
+        loopButton.setBounds(buttonX, currentY, secondRowButtonWidth, buttonHeight);
+        buttonX += secondRowButtonWidth + spacing;
 
-    muteButton.setBounds(buttonX, currentY, buttonWidth, buttonHeight);
+        muteButton.setBounds(buttonX, currentY, secondRowButtonWidth, buttonHeight);
+    }
 
-    currentY += buttonHeight + 15;
+    currentY += buttonHeight + 8;
 
     volumeSlider.setBounds(margin + 55, currentY, contentWidth - 55, sliderHeight);
     currentY += sliderHeight + 12;
 
-    int waveformHeight = 80;
+    int waveformHeight = 70;
     currentY += waveformHeight + 8;
 
     speedSlider.setBounds(margin + 55, currentY, contentWidth - 55, sliderHeight);
@@ -351,6 +386,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     {
         playerAudio.tenBackward();
     }
+    //task 4
     else if (button == &loopButton)
     {
         bool newLoopState = !playerAudio.isLoopEnabled();
@@ -359,6 +395,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         loopButton.setColour(juce::TextButton::buttonColourId,
             newLoopState ? juce::Colours::green : juce::Colours::lightgrey);
     }
+    //---------
     else if (button == &muteButton)
     {
         static float previousVolume = volumeSlider.getValue();
@@ -394,6 +431,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
             loadTrack(prevIndex);
         }
     }
+    //task 10
     else if (button == &setAButton)
     {
         double currentTime = playerAudio.getPosition();
@@ -421,6 +459,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
 
         playerAudio.enableABLoop(false);
     }
+    //-------------
 
     else if (button == &mixerButton)
     {
@@ -449,11 +488,13 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
         else if (slider == &speedSlider)
         playerAudio.speedAudio((float)slider->getValue());
 
+    //task 4
     else if (slider == &positionSlider)
     {
         double newPosition = positionSlider.getValue() * playerAudio.getLength();
         playerAudio.setPosition(newPosition);
     }
+    //---------
 
     else if (slider == &mixerVolumeSlider)
     {
@@ -474,7 +515,15 @@ void PlayerGUI::timerCallback()
 
 void PlayerGUI::paint(juce::Graphics& g)
 {
-    g.fillAll(juce::Colour(0xff353535));
+
+    //background colour
+    juce::ColourGradient bgGradient(
+        juce::Colour(0xff2d1b4e), 0, 0,                         
+        juce::Colour(0xffec4899), getWidth(), getHeight(), false 
+    );
+    g.setGradientFill(bgGradient);
+    g.fillAll();
+    //---------------
 
     if (playerAudio.getAudioThumbnail().getTotalLength() > 0.0)
     {
@@ -484,21 +533,23 @@ void PlayerGUI::paint(juce::Graphics& g)
         int waveWidth = getWidth() - (2 * margin);
         int waveHeight = 80;
 
-        g.setColour(juce::Colour(0xff1a1a1a));
+        // wave background
+        g.setColour(juce::Colour(0xff1a0f2e));
         g.fillRoundedRectangle(waveX, waveY, waveWidth, waveHeight, 4.0f);
 
-        g.setColour(juce::Colour(0xff505050));
+        g.setColour(juce::Colour(0xff8b5cf6));
         g.drawRoundedRectangle(waveX, waveY, waveWidth, waveHeight, 4.0f, 1.0f);
 
-        g.setColour(juce::Colour(0xff00d4ff));
+        g.setColour(juce::Colour(0xffc4b5fd));
         juce::Rectangle<int> waveArea(waveX + 2, waveY + 2, waveWidth - 4, waveHeight - 4);
         playerAudio.getAudioThumbnail().drawChannel(g, waveArea,
             0.0, playerAudio.getAudioThumbnail().getTotalLength(), 0, 1.0f);
+        //-----------
 
         double progress = playerAudio.getPosition() / playerAudio.getLength();
         if (progress > 0.0 && progress <= 1.0)
         {
-            g.setColour(juce::Colour(0xff00ff88).withAlpha(0.25f));
+            g.setColour(juce::Colour(0xffc4b5fd).withAlpha(0.3f));
             g.fillRoundedRectangle(waveX + 2, waveY + 2,
                 static_cast<float>((waveWidth - 4) * progress),
                 waveHeight - 4, 3.0f);
@@ -514,7 +565,7 @@ void PlayerGUI::paint(juce::Graphics& g)
         juce::String timeText = juce::String::formatted("%02d:%02d / %02d:%02d",
             currentSecs / 60, currentSecs % 60, totalSecs / 60, totalSecs % 60);
 
-        g.setColour(juce::Colour(0xff000000).withAlpha(0.8f));
+        g.setColour(juce::Colour(0xff2d1b4e).withAlpha(0.9f));
         g.fillRoundedRectangle(waveX + 8, waveY + 8, 90, 22, 3.0f);
 
         g.setColour(juce::Colours::white);
